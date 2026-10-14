@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ethics Dilemma: Confidentiality & Data Leak</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --danger-red: #ef4444;
+            --success-green: #22c55e;
+            --warning-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--accent-blue);
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .scenario-box {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-left: 5px solid var(--accent-blue);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .scenario-box h2 {
+            margin-top: 0;
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+        }
+
+        .scenario-box p {
+            line-height: 1.6;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            margin-bottom: 0;
+        }
+
+        .step-title {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* Двухколоночная сетка для ДВУХ главных выборов */
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn-choice {
+            background-color: var(--card-bg);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .btn-choice:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -5px rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-choice .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .btn-choice h3 {
+            margin: 0 0 10px 0;
+            color: var(--accent-blue);
+            font-size: 1.25rem;
+        }
+
+        .btn-choice p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Скрытые под-ветки */
+        .branch-content {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 28px;
+            margin-top: 20px;
+            border: 1px solid #334155;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .branch-A {
+            border-top: 4px solid var(--success-green);
+        }
+
+        .branch-B {
+            border-top: 4px solid var(--danger-red);
+        }
+
+        .sub-choice-box {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sub-choice-box:hover {
+            border-color: var(--accent-blue);
+            background-color: #1a2436;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .result-A {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success-green);
+            color: #86efac;
+        }
+
+        .result-B {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger-red);
+            color: #fca5a5;
+        }
+
+        .ethics-note {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #475569;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .btn-reset {
+            display: inline-block;
+            margin-top: 25px;
+            background-color: #334155;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-reset:hover {
+            background-color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>AI Ethics Interactive Decision Tree</h1>
+            <p>Confidentiality & Data Privacy Case Study</p>
+        </div>
+
+        <!-- Описание ситуации -->
+        <div class="scenario-box">
+            <h2>🚨 The Incident</h2>
+            <p>While refactoring a critical payment module under a tight deadline, you pasted proprietary source code—containing active database credentials and production API keys—into a public, web-based AI assistant without an Enterprise confidentiality agreement. A few minutes later, you realize that this data is now stored on third-party servers and may be used to train public LLM models.</p>
+        </div>
+
+        <div id="step-1">
+            <div class="step-title">Choose your primary action (2 Paths):</div>
+            <div class="choices-grid">
+
+                <!-- ВЕТКА А: Сообщить -->
+                <div class="btn-choice" onclick="selectPath('A')">
+                    <div>
+                        <div class="icon">📢</div>
+                        <h3>Path A: Report Immediately</h3>
+                        <p>Acknowledge the leak and directly inform the Security / InfoSec team and your Tech Lead without delay.</p>
+                    </div>
+                </div>
+
+                <!-- ВЕТКА B: Скрыть -->
+                <div class="btn-choice" onclick="selectPath('B')">
+                    <div>
+                        <div class="icon">🙈</div>
+                        <h3>Path B: Conceal & Fix Quietly</h3>
+                        <p>Keep quiet about the AI prompt leak. Silently revoke the production keys and hope no one notices the breach.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ПОД-ВЕТКА А (Анализ первого хорошего выбора) -->
+        <div id="branch-A" class="branch-content branch-A">
+            <h2 style="color: var(--success-green); margin-top:0;">Path A: Immediate Escalation</h2>
+            <p>You inform the InfoSec team right away. Now, select how you handle the follow-up investigation:</p>
+
+            <div class="sub-choice-box" onclick="showResult('A1')">
+                <strong>Option A1: Full Transparency & Key Revocation</strong>
+                <p>Provide the exact prompt history, list exposed API endpoints, and collaborate with DevOps to immediately rotate all compromised credentials.</p>
+            </div>
+
+            <div class="sub-choice-box" onclick="showResult('A2')">
+                <strong>Option A2: Minimize Personal Blame</strong>
+                <p>Report that keys were exposed, but claim it happened due to an "unclear corporate AI policy" rather than your own negligence.</p>
+            </div>
+
+            <div id="result-A1" class="result-box result-A">
+                <h3>✅ Ethical Outcome: Responsible Engineering</h3>
+                <p><strong>Impact:</strong> Production credentials are rotated within minutes, preventing any unauthorized external access. While you may face a internal policy warning, the company's core infrastructure is fully safeguarded.</p>
+                <div class="ethics-note">
+                    <strong>ACM Code 1.6 (Respect Confidentiality) & ACM 2.9 (Robust Security):</strong> Demonstrates high professional responsibility by prioritizing system integrity and data protection over personal comfort.
+                </div>
+            </div>
+
+            <div id="result-A2" class="result-box result-B">
+                <h3>⚠️ Ethical Outcome: Partial Accountability</h3>
+                <p><strong>Impact:</strong> The immediate threat is contained, but deflecting fault erodes trust between you, management, and the DevOps team. Responsible AI usage requires personal ownership of tools used.</p>
+                <div class="ethics-note">
+                    <strong>ACM Code 2.5 (Accept Accountability):</strong> Computing professionals must take full responsibility for their work and the tools they deploy.
+                </div>
+            </div>
+
+            <button class="btn-reset" onclick="resetAll()">← Back to Initial Choice</button>
+        </div>
+
+        <!-- ПОД-ВЕТКА B (Анализ второго плохого выбора) -->
+        <div id="branch-B" class="branch-content branch-B">
+            <h2 style="color: var(--danger-red); margin-top:0;">Path B: Concealment Strategy</h2>
+            <p>You secretly rotate the API keys and pretend nothing happened. Choose how you handle the subsequent consequences:</p>
+
+            <div class="sub-choice-box" onclick="showResult('B1')">
+                <strong>Option B1: Codebase Audit Triggered</strong>
+                <p>A week later, automated security audit logs flag an unauthorized secret exposure. Security officers ask you directly if you used public AI tools.</p>
+            </div>
+
+            <div class="sub-choice-box" onclick="showResult('B2')">
+                <strong>Option B2: Third-Party Data Leak</strong>
+                <p>A month later, proprietary business logic appears in a public data set leak or competitor research due to AI model training usage.</p>
+            </div>
+
+            <div id="result-B1" class="result-box result-B">
+                <h3>❌ Ethical Failure: Disciplinary Action</h3>
+                <p><strong>Impact:</strong> Continuing to hide the truth during a security inquiry destroys professional trust. Discovery leads to immediate termination and potential legal liabilities for violating NDA.</p>
+                <div class="ethics-note">
+                    <strong>ACM Code 1.3 (Be Honest and Trustworthy):</strong> Dishonesty and active concealment are severe breaches of professional conduct.
+                </div>
+            </div>
+
+            <div id="result-B2" class="result-box result-B">
+                <h3>💥 Ethical Catastrophe: Severe IP & Legal Damage</h3>
+                <p><strong>Impact:</strong> The company suffers catastrophic Intellectual Property loss and regulatory fines (e.g., GDPR violations) due to leaked user data embedded in the proprietary code.</p>
+                <div class="ethics-note">
+                    <strong>Russian AI Ethics Code (Data Protection & Risk Assessment):</strong> Over-reliance on unverified AI platforms without data protection guarantees leads to irreparable organizational harm.
+                </div>
+            </div>
+
+            <button class="btn-reset" onclick="resetAll()">← Back to Initial Choice</button>
+        </div>
+
+    </div>
+
+    <script>
+        function selectPath(path) {
+            document.getElementById('branch-A').style.display = 'none';
+            document.getElementById('branch-B').style.display = 'none';
+
+            // Скрываем или показываем соответствующую ветку
+            if(path === 'A') {
+                document.getElementById('branch-A').style.display = 'block';
+            } else if(path === 'B') {
+                document.getElementById('branch-B').style.display = 'block';
+            }
+
+            // Плавная прокрутка вниз
+            document.getElementById('branch-' + path).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showResult(resultId) {
+            // Скрываем все результаты в текущих ветках
+            const results = document.querySelectorAll('.result-box');
+            results.forEach(r => r.style.display = 'none');
+
+            // Показываем выбранный результат
+            const target = document.getElementById('result-' + resultId);
+            if(target) {
+                target.style.display = 'block';
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function resetAll() {
+            document.getElementById('branch-A').style.display = 'none';
+            document.getElementById('branch-B').style.display = 'none';
+            const results = document.querySelectorAll('.result-box');
+            results.forEach(r => r.style.display = 'none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
